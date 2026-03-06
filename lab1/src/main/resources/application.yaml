@@ -1,0 +1,18 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: CustomerManagement
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format-sql: true
