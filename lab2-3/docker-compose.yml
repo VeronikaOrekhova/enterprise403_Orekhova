@@ -1,0 +1,61 @@
+services:
+  postgres-enterprise:
+    image: postgres:15
+    container_name: postgres-enterprise
+    environment:
+      POSTGRES_DB: enterprise
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_enterprise_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.7
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-enterprise:5432/enterprise
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-enterprise
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  artemis:
+    image: apache/activemq-artemis:latest
+    container_name: artemis
+    environment:
+      ARTEMIS_USER: admin
+      ARTEMIS_PASSWORD: admin
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    volumes:
+      - artemis_data:/var/lib/artemis-instance
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+volumes:
+  postgres_enterprise_data:
+  artemis_data:
+
+networks:
+  microservices-network:
+    name: microservices-network
+    driver: bridge

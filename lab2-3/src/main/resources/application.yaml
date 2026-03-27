@@ -1,0 +1,47 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: CustomerManagement
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/Oauth
+          jwk-set-uri: http://localhost:8080/realms/Oauth/protocol/openid-connect/certs
+
+  artemis:
+    mode: native
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+
+app:
+  queue:
+    email: email.queue
+    report: report.queue
+  topic:
+    customer-events: customer.events.topic
+
+
+
+keycloak:
+  server-url: http://localhost:8080
+  realm: Oauth
+  client-id: myclient
+  client-secret: Smozi9747zmHIC2tolbKu8W2eoFlis82
+  admin-username: admin
+  admin-password: admin
